@@ -35,7 +35,7 @@ void LoadTex(Texture& tex, string filename) {
 
 int main()
 {
-    RenderWindow window(VideoMode(800, 600), "duck Buster");
+    RenderWindow window(VideoMode(800, 600), "Duck Buster");
     World world(Vector2f(0, 0));
     int score(0);
     int arrows(5);
@@ -60,7 +60,7 @@ int main()
     top.setStatic(true);
     world.AddPhysicsBody(top);
 
-    PhysicsRectangle left;
+    /*PhysicsRectangle left;
     left.setSize(Vector2f(10, 600));
     left.setCenter(Vector2f(5, 300));
     left.setStatic(true);
@@ -70,14 +70,14 @@ int main()
     right.setSize(Vector2f(10, 600));
     right.setCenter(Vector2f(795, 300));
     right.setStatic(true);
-    world.AddPhysicsBody(right);
+    world.AddPhysicsBody(right);*/
 
-    Texture redTex;
-    LoadTex(redTex, "images/duck.png");
+    Texture duckTex;
+    LoadTex(duckTex, "images/duck.png");
     PhysicsShapeList<PhysicsSprite> ducks;
     for (int i(0); i < 6; i++) {
         PhysicsSprite& duck = ducks.Create();
-        duck.setTexture(redTex);
+        duck.setTexture(duckTex);
         int x = 50 + ((700 / 5) * i);
         Vector2f sz = duck.getSize();
         
@@ -116,11 +116,14 @@ int main()
     Clock clock;
     Time lastTime(clock.getElapsedTime());
     Time currentTime(lastTime);
+    long interval = 0;
 
     while ((arrows > 0) || drawingArrow) {
         currentTime = clock.getElapsedTime();
         Time deltaTime = currentTime - lastTime;
-        long deltaMS = deltaTime.asMilliseconds();
+        int deltaMS = deltaTime.asMilliseconds();
+        interval += deltaMS;
+
         if (deltaMS > 9) {
             lastTime = currentTime;
             world.UpdatePhysics(deltaMS);
@@ -138,8 +141,15 @@ int main()
             if (drawingArrow) {
                 window.draw(arrow);
             }
+            // ---------------
             for (PhysicsShape& duck : ducks) {
                 window.draw((PhysicsSprite&)duck);
+            }
+            // ---------------
+
+            if (interval >= 42000000) {
+                cout << "count" << endl;
+                interval = 0;
             }
             window.draw(crossBow);
             scoreText.setString(to_string(score));
