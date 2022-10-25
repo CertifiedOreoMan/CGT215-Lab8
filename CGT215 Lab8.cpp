@@ -1,4 +1,4 @@
-// BalloonBuster.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// duckBuster.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 
@@ -20,7 +20,7 @@ void LoadTex(Texture& tex, string filename) {
     }
 }
 
-void MoveCrossbow(PhysicsSprite& crossbow, int elapsedMS) {
+/*void MoveCrossbow(PhysicsSprite& crossbow, int elapsedMS) {
     if (Keyboard::isKeyPressed(Keyboard::Right)) {
         Vector2f newPos(crossbow.getCenter());
         newPos.x = newPos.x + (KB_SPEED * elapsedMS);
@@ -31,11 +31,11 @@ void MoveCrossbow(PhysicsSprite& crossbow, int elapsedMS) {
         newPos.x = newPos.x - (KB_SPEED * elapsedMS);
         crossbow.setCenter(newPos);
     }
-}
+}*/
 
 int main()
 {
-    RenderWindow window(VideoMode(800, 600), "Balloon Buster");
+    RenderWindow window(VideoMode(800, 600), "duck Buster");
     World world(Vector2f(0, 0));
     int score(0);
     int arrows(5);
@@ -73,24 +73,25 @@ int main()
     world.AddPhysicsBody(right);
 
     Texture redTex;
-    LoadTex(redTex, "images/red_balloon.png");
-    PhysicsShapeList<PhysicsSprite> balloons;
+    LoadTex(redTex, "images/duck.png");
+    PhysicsShapeList<PhysicsSprite> ducks;
     for (int i(0); i < 6; i++) {
-        PhysicsSprite& balloon = balloons.Create();
-        balloon.setTexture(redTex);
+        PhysicsSprite& duck = ducks.Create();
+        duck.setTexture(redTex);
         int x = 50 + ((700 / 5) * i);
-        Vector2f sz = balloon.getSize();
-        balloon.setCenter(Vector2f(x, 20 + (sz.y / 2)));
-        balloon.setVelocity(Vector2f(0.25, 0));
-        world.AddPhysicsBody(balloon);
-        balloon.onCollision =
-            [&drawingArrow, &world, &arrow, &balloon, &balloons, &score]
+        Vector2f sz = duck.getSize();
+        
+        duck.setCenter(Vector2f(x, 20 + (sz.y / 2)));
+        duck.setVelocity(Vector2f(0.25, 0));
+        world.AddPhysicsBody(duck);
+        duck.onCollision =
+            [&drawingArrow, &world, &arrow, &duck, &ducks, &score]
         (PhysicsBodyCollisionResult result) {
             if (result.object2 == arrow) {
                 drawingArrow = false;
                 world.RemovePhysicsBody(arrow);
-                world.RemovePhysicsBody(balloon);
-                balloons.QueueRemove(balloon);
+                world.RemovePhysicsBody(duck);
+                ducks.QueueRemove(duck);
                 score += 10;
             }
         };
@@ -104,7 +105,7 @@ int main()
 
     Text scoreText;
     Font font;
-    if (!font.loadFromFile("arial.ttf")) {
+    if (!font.loadFromFile("c:/windows/fonts/Arial.ttf")) {
         cout << "Couldn't load font arial.ttf" << endl;
         exit(1);
     }
@@ -123,7 +124,7 @@ int main()
         if (deltaMS > 9) {
             lastTime = currentTime;
             world.UpdatePhysics(deltaMS);
-            MoveCrossbow(crossBow, deltaMS);
+            //MoveCrossbow(crossBow, deltaMS);
             if (Keyboard::isKeyPressed(Keyboard::Space) &&
                 !drawingArrow) {
                 drawingArrow = true;
@@ -137,8 +138,8 @@ int main()
             if (drawingArrow) {
                 window.draw(arrow);
             }
-            for (PhysicsShape& balloon : balloons) {
-                window.draw((PhysicsSprite&)balloon);
+            for (PhysicsShape& duck : ducks) {
+                window.draw((PhysicsSprite&)duck);
             }
             window.draw(crossBow);
             scoreText.setString(to_string(score));
@@ -154,7 +155,7 @@ int main()
             //world.VisualizeAllBounds(window);
 
             window.display();
-            balloons.DoRemovals();
+            ducks.DoRemovals();
         }
     }
     Text gameOverText;
