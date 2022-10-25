@@ -64,9 +64,9 @@ int main()
     left.setSize(Vector2f(10, 600));
     left.setCenter(Vector2f(5, 300));
     left.setStatic(true);
-    world.AddPhysicsBody(left);
+    world.AddPhysicsBody(left);*/
 
-    PhysicsRectangle right;
+    /*PhysicsRectangle right;
     right.setSize(Vector2f(10, 600));
     right.setCenter(Vector2f(795, 300));
     right.setStatic(true);
@@ -75,12 +75,11 @@ int main()
     Texture duckTex;
     LoadTex(duckTex, "images/duck.png");
     PhysicsShapeList<PhysicsSprite> ducks;
-    for (int i(0); i < 6; i++) {
+    /*for (int i(0); i < 6; i++) {
         PhysicsSprite& duck = ducks.Create();
         duck.setTexture(duckTex);
         int x = 50 + ((700 / 5) * i);
         Vector2f sz = duck.getSize();
-        
         duck.setCenter(Vector2f(x, 20 + (sz.y / 2)));
         duck.setVelocity(Vector2f(0.25, 0));
         world.AddPhysicsBody(duck);
@@ -95,7 +94,7 @@ int main()
                 score += 10;
             }
         };
-    }
+    }*/
 
     top.onCollision = [&drawingArrow, &world, &arrow]
     (PhysicsBodyCollisionResult result) {
@@ -117,7 +116,7 @@ int main()
     Time lastTime(clock.getElapsedTime());
     Time currentTime(lastTime);
     long interval = 0;
-
+    
     while ((arrows > 0) || drawingArrow) {
         currentTime = clock.getElapsedTime();
         Time deltaTime = currentTime - lastTime;
@@ -145,12 +144,35 @@ int main()
             for (PhysicsShape& duck : ducks) {
                 window.draw((PhysicsSprite&)duck);
             }
-            // ---------------
+            //---------------
 
             if (interval >= 42000000) {
+                // ------------------
                 cout << "count" << endl;
+                PhysicsSprite& duck = ducks.Create();
+                duck.setTexture(duckTex);
+                Vector2f sz = duck.getSize();
+                duck.setCenter(Vector2f(0, 20 + (sz.y / 2)));
+                duck.setVelocity(Vector2f(0.25, 0));
+                world.AddPhysicsBody(duck);
+                
+                duck.onCollision =
+                    [&drawingArrow, &world, &arrow, &duck, &ducks, &score]
+                (PhysicsBodyCollisionResult result) {
+                    if (result.object2 == arrow) {
+                        drawingArrow = false;
+                        world.RemovePhysicsBody(arrow);
+                        world.RemovePhysicsBody(duck);
+                        ducks.QueueRemove(duck);
+                        score += 10;
+                    }
+                    
+                };
+                //DUCK DESPAWN NOT COMPLETE 
+                // -----------------
                 interval = 0;
             }
+            
             window.draw(crossBow);
             scoreText.setString(to_string(score));
             FloatRect textBounds = scoreText.getGlobalBounds();
