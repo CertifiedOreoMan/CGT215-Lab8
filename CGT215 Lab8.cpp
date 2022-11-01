@@ -20,18 +20,6 @@ void LoadTex(Texture& tex, string filename) {
     }
 }
 
-/*void MoveCrossbow(PhysicsSprite& crossbow, int elapsedMS) {
-    if (Keyboard::isKeyPressed(Keyboard::Right)) {
-        Vector2f newPos(crossbow.getCenter());
-        newPos.x = newPos.x + (KB_SPEED * elapsedMS);
-        crossbow.setCenter(newPos);
-    }
-    if (Keyboard::isKeyPressed(Keyboard::Left)) {
-        Vector2f newPos(crossbow.getCenter());
-        newPos.x = newPos.x - (KB_SPEED * elapsedMS);
-        crossbow.setCenter(newPos);
-    }
-}*/
 
 int main()
 {
@@ -60,41 +48,16 @@ int main()
     top.setStatic(true);
     world.AddPhysicsBody(top);
 
-    /*PhysicsRectangle left;
-    left.setSize(Vector2f(10, 600));
-    left.setCenter(Vector2f(5, 300));
-    left.setStatic(true);
-    world.AddPhysicsBody(left);*/
-
-    /*PhysicsRectangle right;
+    PhysicsRectangle right;
     right.setSize(Vector2f(10, 600));
     right.setCenter(Vector2f(795, 300));
     right.setStatic(true);
-    world.AddPhysicsBody(right);*/
+    world.AddPhysicsBody(right);
 
     Texture duckTex;
     LoadTex(duckTex, "images/duck.png");
     PhysicsShapeList<PhysicsSprite> ducks;
-    /*for (int i(0); i < 6; i++) {
-        PhysicsSprite& duck = ducks.Create();
-        duck.setTexture(duckTex);
-        int x = 50 + ((700 / 5) * i);
-        Vector2f sz = duck.getSize();
-        duck.setCenter(Vector2f(x, 20 + (sz.y / 2)));
-        duck.setVelocity(Vector2f(0.25, 0));
-        world.AddPhysicsBody(duck);
-        duck.onCollision =
-            [&drawingArrow, &world, &arrow, &duck, &ducks, &score]
-        (PhysicsBodyCollisionResult result) {
-            if (result.object2 == arrow) {
-                drawingArrow = false;
-                world.RemovePhysicsBody(arrow);
-                world.RemovePhysicsBody(duck);
-                ducks.QueueRemove(duck);
-                score += 10;
-            }
-        };
-    }*/
+
 
     top.onCollision = [&drawingArrow, &world, &arrow]
     (PhysicsBodyCollisionResult result) {
@@ -140,14 +103,11 @@ int main()
             if (drawingArrow) {
                 window.draw(arrow);
             }
-            // ---------------
             for (PhysicsShape& duck : ducks) {
                 window.draw((PhysicsSprite&)duck);
             }
-            //---------------
 
             if (interval >= 42000000) {
-                // ------------------
                 cout << "count" << endl;
                 PhysicsSprite& duck = ducks.Create();
                 duck.setTexture(duckTex);
@@ -157,19 +117,21 @@ int main()
                 world.AddPhysicsBody(duck);
                 
                 duck.onCollision =
-                    [&drawingArrow, &world, &arrow, &duck, &ducks, &score]
+                    [&drawingArrow, &world, &arrow, &duck, &ducks, &score, &right]
                 (PhysicsBodyCollisionResult result) {
                     if (result.object2 == arrow) {
-                        drawingArrow = false;
                         world.RemovePhysicsBody(arrow);
                         world.RemovePhysicsBody(duck);
                         ducks.QueueRemove(duck);
                         score += 10;
+                        drawingArrow = false;
+                    }
+                    if (result.object2 == right) {
+                        world.RemovePhysicsBody(duck);
+                        ducks.QueueRemove(duck);
                     }
                     
                 };
-                //DUCK DESPAWN NOT COMPLETE 
-                // -----------------
                 interval = 0;
             }
             
